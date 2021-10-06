@@ -2,7 +2,6 @@ package org.deegaem.imtusers.service;
 
 import org.deegaem.imtusers.domain.User;
 import org.deegaem.imtusers.domain.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,12 +10,11 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
     UserRepository userRepository;
 
-    //public UserServiceImpl(UserRepository userRepository) {
-      //  this.userRepository = userRepository;
-    //}
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public List<User> getUsers() {
