@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("/imt/users")
 public class UsersResource {
 
     UserServiceImpl service;
@@ -30,6 +30,7 @@ public class UsersResource {
         return new ResponseEntity<>(this.service.getUserById(userId), HttpStatus.OK);
     }
 
+    @PutMapping
     public ResponseEntity<User> saveUser(@RequestBody User user) {
         User user1 = this.service.insert(user);
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -37,7 +38,7 @@ public class UsersResource {
         return new ResponseEntity<>(user1, httpHeaders, HttpStatus.CREATED);
     }
 
-    @PutMapping({"/{userId}"})
+    @PatchMapping({"/{userId}"})
     public ResponseEntity<User> updateUser(@PathVariable("userId") Long userId, @RequestBody User user) {
         this.service.updateUser(userId, user);
         return new ResponseEntity<>(this.service.getUserById(userId), HttpStatus.OK);

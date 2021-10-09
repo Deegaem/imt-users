@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Builder;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 
 @Entity
 @Data
@@ -22,7 +21,7 @@ public class User {
     @Column
     private String name;
     @Column
-    @Email
+    //@Email
     private String email;
     @Embedded
     private Credential credential;
