@@ -2,50 +2,60 @@ package org.deegaem.imtusers.boundary;
 
 import org.deegaem.imtusers.domain.User;
 import org.deegaem.imtusers.service.UserServiceImpl;
-import org.springframework.http.HttpHeaders;
+import org.deegaem.imtusers.service.dto.UserDTO;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/imt/users")
 public class UsersResource {
 
-    UserServiceImpl service;
+    private UserServiceImpl service;
 
-    public UsersResource(UserServiceImpl service) {
+    private ModelMapper modelMapper;
+
+    public UsersResource(UserServiceImpl service, ModelMapper modelMapper) {
         this.service = service;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = this.service.getUsers();
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = this.service.getUsers().stream().map(user -> modelMapper.map(user, UserDTO.class))
+                .collect(Collectors.toList());
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping({"/{userId}"})
-    public ResponseEntity<User> getUser(@PathVariable Long userId) {
-        return new ResponseEntity<>(this.service.getUserById(userId), HttpStatus.OK);
+    public ResponseEntity<UserDTO> getUser(@PathVariable Long userId) {
+        User user = this.service.getUserById(userId);
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-    @PutMapping
-    public ResponseEntity<User> saveUser(@RequestBody User user) {
-        User user1 = this.service.insert(user);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("user", "/api/v1/user/" + user1.getId().toString());
-        return new ResponseEntity<>(user1, httpHeaders, HttpStatus.CREATED);
+    @PostMapping
+    public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {
+        User userRequest = modelMapper.map(userDTO, User.class);
+        User user = this.service.insert(userRequest);
+        UserDTO userResponse = modelMapper.map(user, UserDTO.class);
+        return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
     }
 
-    @PatchMapping({"/{userId}"})
-    public ResponseEntity<User> updateUser(@PathVariable("userId") Long userId, @RequestBody User user) {
-        this.service.updateUser(userId, user);
-        return new ResponseEntity<>(this.service.getUserById(userId), HttpStatus.OK);
+    @PutMapping({"/{userId}"})
+    public ResponseEntity<UserDTO> updateUser(@PathVariable("userId") Long userId, @RequestBody UserDTO userDTO) {
+        User userRequest = modelMapper.map(userDTO, User.class);
+        User user = this.service.updateUser(userId, userRequest);
+        UserDTO userResponse = modelMapper.map(user, UserDTO.class);
+        return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
 
     @DeleteMapping({"/{userId}"})
-    public ResponseEntity<User> deleteUser(@PathVariable("userId") Long userId) {
+    public ResponseEntity<UserDTO> deleteUser(@PathVariable("userId") Long userId) {
         this.service.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

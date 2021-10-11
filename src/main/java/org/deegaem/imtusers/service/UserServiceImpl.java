@@ -2,6 +2,8 @@ package org.deegaem.imtusers.service;
 
 import org.deegaem.imtusers.domain.User;
 import org.deegaem.imtusers.domain.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -9,6 +11,8 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     UserRepository userRepository;
 
@@ -34,13 +38,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(Long id, User user) {
+    public User updateUser(Long id, User user) {
         User userFromDb = userRepository.findById(id).get();
-        System.out.println(userFromDb.toString());
+        log.debug("updateUser userFromDb: ",userFromDb.toString());
         userFromDb.setName(user.getName());
         userFromDb.setEmail(user.getEmail());
         //userFromDb.setCredential(User.getCredential());
-        userRepository.save(userFromDb);
+        return userRepository.save(userFromDb);
     }
 
     @Override
